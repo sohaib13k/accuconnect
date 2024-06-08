@@ -35,6 +35,7 @@ ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(" ")
 
 INSTALLED_APPS = [
     "account",
+    "userprofile",
     "rest_framework",
     'django.contrib.admin',
     'django.contrib.auth',
