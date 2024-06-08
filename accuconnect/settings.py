@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
+
+load_dotenv()  # loading .env file stored in BASE_DIR
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,17 +24,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-f-mjx108soyh(mx1t3fmn)c6^)4#bs3lfugz_a8f2+*9*!e1vy'
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = "True" == os.getenv("DEBUG")
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(" ")
 
 # Application definition
 
 INSTALLED_APPS = [
+    "account",
+    "rest_framework",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -74,9 +79,13 @@ WSGI_APPLICATION = 'accuconnect.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("PG_NAME"),
+        "USER": os.getenv("PG_USER"),
+        "PASSWORD": os.getenv("PG_PASSWORD"),
+        "HOST": os.getenv("PG_HOST"),
+        "PORT": os.getenv("PG_PORT"),
     }
 }
 
@@ -100,12 +109,45 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "file": {
+            "level": os.getenv("LOG_LEVEL"),
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.getenv("LOG_LOCATION"),
+            "formatter": "simple",
+            "maxBytes": 10 * 1024 * 1024,  # 10 MB
+            "backupCount": 5,  # Keep up to 5 backup files
+        },
+    },
+    "formatters": {
+        "simple": {
+            "format": "[%(levelname)s] [%(asctime)s] [%(process)d] [%(threadName)s] %(message)s",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["file"],
+            "level": os.getenv("LOG_LEVEL"),
+            "propagate": True,
+        },
+        "": {
+            "handlers": ["file"],
+            "level": os.getenv("LOG_LEVEL"),
+            "propagate": True,
+        },
+    },
+}
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "Asia/Kolkata"
 
 USE_I18N = True
 
