@@ -1,8 +1,7 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.authentication import TokenAuthentication
 from .serializers import RegisterSerializer, LoginSerializer
 
 
@@ -24,14 +23,11 @@ def login(request):
 
 
 @api_view(["POST"])
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 def logout(request):
-    permission_classes = (IsAuthenticated,)
-    authentication_classes = (JWTAuthentication,)
-
     try:
-        refresh_token = request.data["refresh"]
-        token = RefreshToken(refresh_token)
-        token.blacklist()
-        return Response(status=205)
+        request.user.auth_token.delete()
+        return Response({"message": "Successfully logged out"}, status=205)
     except Exception as e:
-        return Response(status=400)
+        return Response({"error": str(e)}, status=400)

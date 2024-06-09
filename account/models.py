@@ -20,4 +20,4 @@ class CustomAccount(AbstractUser):
     USERNAME_FIELD = "email"
 
     def __str__(self):
-        return self.first_name
+        return self.email
