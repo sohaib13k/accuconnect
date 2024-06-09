@@ -19,7 +19,7 @@ class UserProfile(models.Model):
     sent_request_tmstmp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.first_name}'s Profile"
+        return self.user.email
 
 
 @receiver(
