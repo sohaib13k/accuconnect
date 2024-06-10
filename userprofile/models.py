@@ -12,9 +12,9 @@ class UserProfile(models.Model):
         related_name="profile",
         verbose_name="account",
     )
-    friends = models.ManyToManyField("self")
-    sent_requests = models.ManyToManyField("self")
-    pending_requests = models.ManyToManyField("self")
+    friends = models.ManyToManyField("self", symmetrical=False, related_name="friends_profile", blank=True)
+    sent_requests = models.ManyToManyField("self", symmetrical=False, related_name="sent_requests_profile", blank=True)
+    pending_requests = models.ManyToManyField("self", symmetrical=False, related_name="pending_requests_profile", blank=True)
     sent_request_count = models.IntegerField(default=0)
     sent_request_tmstmp = models.DateTimeField(auto_now_add=True)
 
@@ -22,11 +22,7 @@ class UserProfile(models.Model):
         return self.user.email
 
 
-@receiver(
-    post_save,
-    sender=settings.AUTH_USER_MODEL,
-    dispatch_uid="570db2c4-59ea-4533-b65f-e2c02fec1454",
-)
+@receiver(post_save, sender=settings.AUTH_USER_MODEL, dispatch_uid="570db2c4-59ea-4533-b65f-e2c02fec1454")
 def create_or_update_user_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.create(user=instance)
