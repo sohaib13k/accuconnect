@@ -32,7 +32,7 @@ def find_friend(request):
 
         
         paginator = PageNumberPagination()
-        paginator.page_size = 2
+        paginator.page_size = 10
         paginated_profiles = paginator.paginate_queryset(request_profile, request)
         serializer = FindFriendSerialser(paginated_profiles, many=True)
 

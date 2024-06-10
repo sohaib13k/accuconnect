@@ -4,11 +4,13 @@ from django.utils import timezone
 
 
 class FindFriendSerialser(serializers.ModelSerializer):
-    search_result = serializers.EmailField(source='user.email', read_only=True)
+    email = serializers.EmailField(source='user.email', read_only=True)
+    first_name = serializers.CharField(source='user.first_name', read_only=True)
+    last_name = serializers.CharField(source='user.last_name', read_only=True)
 
     class Meta:
         model = UserProfile
-        fields = ["search_result"]
+        fields = ["email", "first_name", "last_name"]
 
 
 class SendRequestSerialiser(serializers.Serializer):
