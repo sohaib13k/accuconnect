@@ -2,8 +2,10 @@ from rest_framework.decorators import api_view, permission_classes, authenticati
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
-from .serializers import ListFriendSerialiser, PendingRequestSerialiser, SendRequestSerialiser
-from .models import UserProfile
+from .serializers import (
+    ListFriendSerialiser, PendingRequestSerialiser, SendRequestSerialiser, 
+    AcceptRequestSerialiser, RejectRequestSerialiser,
+)
 
 
 @api_view(["GET"])
@@ -19,11 +21,11 @@ def list_friend(request):
             return Response(status=400)
         
         if request.GET.get("friend-request") == "send":
-            serializer = SendRequestSerialiser(data=request.data, context={"request": request})            
+            serializer = SendRequestSerialiser(data=request.data, context={"request": request})     
         elif request.GET.get("friend-request") == "accept":
-            serializer = SendRequestSerialiser( context={"request": request})
+            serializer = AcceptRequestSerialiser(data=request.data, context={"request": request})
         elif request.GET.get("friend-request") == "reject":
-            serializer = SendRequestSerialiser( context={"request": request})
+            serializer = RejectRequestSerialiser(data=request.data, context={"request": request})
 
         if serializer.is_valid():
             return Response(serializer.data, status=200)
