@@ -2,11 +2,20 @@ from rest_framework import serializers
 from .models import UserProfile
 from django.utils import timezone
 
+
+class FindFriendSerialser(serializers.ModelSerializer):
+    search_result = serializers.EmailField(source='user.email', read_only=True)
+
+    class Meta:
+        model = UserProfile
+        fields = ["search_result"]
+
+
 class SendRequestSerialiser(serializers.Serializer):
     def validate(self, attrs):
         request = self.context.get("request")
         user = UserProfile.objects.get(user=request.user)
-        request_profile = UserProfile.objects.filter(user__email=request.GET.get("email")).first()
+        request_profile = UserProfile.objects.filter(user__email=request.query_params.get("email")).first()
         now = timezone.now()
 
         if user.sent_request_count >= 3 and (now - user.sent_request_tmstmp).total_seconds() < 60:
@@ -46,7 +55,7 @@ class AcceptRequestSerialiser(serializers.Serializer):
     def validate(self, attrs):
         request = self.context.get("request")
         user = UserProfile.objects.get(user=request.user)
-        request_profile = UserProfile.objects.filter(user__email=request.GET.get("email")).first()
+        request_profile = UserProfile.objects.filter(user__email=request.query_params.get("email")).first()
 
         if not request_profile:
             raise serializers.ValidationError({"User": "User not exist"})
@@ -71,7 +80,7 @@ class RejectRequestSerialiser(serializers.Serializer):
     def validate(self, attrs):
         request = self.context.get("request")
         user = UserProfile.objects.get(user=request.user)
-        request_profile = UserProfile.objects.filter(user__email=request.GET.get("email")).first()
+        request_profile = UserProfile.objects.filter(user__email=request.query_params.get("email")).first()
 
         if not request_profile:
             raise serializers.ValidationError({"User": "User not exist"})
